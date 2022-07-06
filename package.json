@@ -1,0 +1,26 @@
+{
+  "name": "tslox",
+  "version": "1.0.0",
+  "description": "Typescript interpreter for lox",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node ./src/index.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dudupopkhadze/tslox.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dudupopkhadze/tslox/issues"
+  },
+  "homepage": "https://github.com/dudupopkhadze/tslox#readme",
+  "dependencies": {
+    "ts-node": "^10.8.2",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.3"
+  }
+}

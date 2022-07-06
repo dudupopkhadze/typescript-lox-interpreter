@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "stripInternal": true,
+    "esModuleInterop": true,
+    "types": [],
+    "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": false,
+    "noUncheckedIndexedAccess": true,
+    "preserveConstEnums": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "lib": ["ES2020", "DOM"]
+  },
+  "include": ["src"]
+}
