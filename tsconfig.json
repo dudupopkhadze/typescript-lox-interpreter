@@ -10,7 +10,7 @@
     "noImplicitReturns": true,
     "stripInternal": true,
     "esModuleInterop": true,
-    "types": [],
+    "types": ["node"],
     "forceConsistentCasingInFileNames": true,
     "composite": true,
     "noFallthroughCasesInSwitch": true,
