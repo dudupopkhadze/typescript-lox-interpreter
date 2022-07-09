@@ -1,17 +1,17 @@
 import { LiteralValue, Token } from "./Token";
 
 export abstract class Expression {
-  abstract accept<T>(visitor: Visitor<T>): T;
+  abstract accept<T>(visitor: ExpressionVisitor<T>): T;
 }
 
-export interface Visitor<T> {
+export interface ExpressionVisitor<T> {
   visitBinaryExpr(expr: Binary): T;
   visitUnaryExpr(expr: Unary): T;
   visitGroupingExpr(expr: Grouping): T;
   visitLiteralExpr(expr: Literal): T;
 }
 
-class Binary extends Expression {
+export class Binary extends Expression {
   left: Expression;
   right: Expression;
   operator: Token;
@@ -23,12 +23,12 @@ class Binary extends Expression {
     this.operator = operator;
   }
 
-  accept<T>(visitor: Visitor<T>): T {
+  accept<T>(visitor: ExpressionVisitor<T>): T {
     return visitor.visitBinaryExpr(this);
   }
 }
 
-class Unary extends Expression {
+export class Unary extends Expression {
   right: Expression;
   operator: Token;
 
@@ -38,12 +38,12 @@ class Unary extends Expression {
     this.operator = operator;
   }
 
-  accept<T>(visitor: Visitor<T>): T {
+  accept<T>(visitor: ExpressionVisitor<T>): T {
     return visitor.visitUnaryExpr(this);
   }
 }
 
-class Grouping extends Expression {
+export class Grouping extends Expression {
   expression: Expression;
 
   constructor(expression: Expression) {
@@ -51,12 +51,12 @@ class Grouping extends Expression {
     this.expression = expression;
   }
 
-  accept<T>(visitor: Visitor<T>): T {
+  accept<T>(visitor: ExpressionVisitor<T>): T {
     return visitor.visitGroupingExpr(this);
   }
 }
 
-class Literal extends Expression {
+export class Literal extends Expression {
   value: LiteralValue;
 
   constructor(value: LiteralValue) {
@@ -64,7 +64,7 @@ class Literal extends Expression {
     this.value = value;
   }
 
-  accept<T>(visitor: Visitor<T>): T {
+  accept<T>(visitor: ExpressionVisitor<T>): T {
     return visitor.visitLiteralExpr(this);
   }
 }

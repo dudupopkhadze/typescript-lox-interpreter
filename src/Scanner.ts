@@ -1,5 +1,5 @@
 import { Lox } from "./lox";
-import { Literal, Token, TokenType } from "./Token";
+import { LiteralValue, Token, TokenType } from "./Token";
 
 export class Scanner {
   start = 0;
@@ -206,7 +206,7 @@ export class Scanner {
   private addToken(type: TokenType) {
     this.addTokenWithLiteral(type, null);
   }
-  private addTokenWithLiteral(type: TokenType, literal: Literal) {
+  private addTokenWithLiteral(type: TokenType, literal: LiteralValue) {
     const text = this.source.substring(this.start, this.current);
     this.result.push(new Token(type, text, literal, this.line));
   }
