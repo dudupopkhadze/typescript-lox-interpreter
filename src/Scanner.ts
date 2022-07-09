@@ -1,4 +1,4 @@
-import { Lox } from "./lox";
+import { Lox } from "./Lox";
 import { LiteralValue, Token, TokenType } from "./Token";
 
 export class Scanner {

@@ -1,4 +1,3 @@
-import { Lox } from "./lox";
+import { Lox } from "./Lox";
 
-const lox = new Lox();
-lox.start();
+new Lox().start();

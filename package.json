@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "npm run clean ; tsc && node build/index.js",
-    "clean": "rm -rf build && rm tsconfig.tsbuildinfo"
+    "clean": "rm -rf build && rm tsconfig.tsbuildinfo",
+    "lint": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
