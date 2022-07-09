@@ -1,6 +1,7 @@
 import readline from "readline";
-import { AstPrinter } from "./AstPrinter";
+import { Interpreter } from "./Interpreter";
 import { Parser } from "./Parser";
+import { RuntimeError } from "./RuntimeError";
 import { Scanner } from "./Scanner";
 import { Token, TokenType } from "./Token";
 
@@ -9,7 +10,9 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 export class Lox {
+  static interpreter = new Interpreter();
   static hadError: boolean = false;
+  static hadRuntimeError = false;
   start() {
     this.runPrompt();
   }
@@ -19,9 +22,10 @@ export class Lox {
     const tokens = scanner.scanTokens();
     const parser = new Parser(tokens);
     const expression = parser.parse()!;
-    if (Lox.hadError) return;
+    if (Lox.hadError) process.exit(65);
+    if (Lox.hadRuntimeError) process.exit(70);
 
-    console.log(new AstPrinter().print(expression));
+    Lox.interpreter.interpret(expression);
   }
 
   private runPrompt() {
@@ -31,6 +35,11 @@ export class Lox {
       this.runPrompt();
       Lox.hadError = false;
     });
+  }
+
+  static runtimeError(error: RuntimeError) {
+    console.log(error.message + "\n[line " + error.token.line + "]");
+    Lox.hadRuntimeError = true;
   }
 
   static error(line: number, message: string) {

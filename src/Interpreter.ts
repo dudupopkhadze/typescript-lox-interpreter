@@ -6,10 +6,21 @@ import {
   Literal,
   Unary,
 } from "./Expression";
+import { Lox } from "./Lox";
 import { RuntimeError } from "./RuntimeError";
 import { LiteralValue, Token, TokenType } from "./Token";
 
 export class Interpreter implements ExpressionVisitor<LiteralValue> {
+  interpret(expression: Expression) {
+    try {
+      const value = this.evaluate(expression);
+      console.log(this.stringify(value));
+    } catch (error) {
+      const err = error as RuntimeError;
+      Lox.runtimeError(err);
+    }
+  }
+
   visitLiteralExpr(expr: Literal): unknown {
     return expr.value;
   }
@@ -79,6 +90,15 @@ export class Interpreter implements ExpressionVisitor<LiteralValue> {
         return -Number(right);
     }
     return null;
+  }
+
+  private stringify(literal: LiteralValue) {
+    if (literal === null) return "nil";
+
+    if (typeof literal === "number") {
+      return Number(literal).toString();
+    }
+    return `${literal}`;
   }
 
   private checkNumberOperand(operator: Token, operand: LiteralValue) {
