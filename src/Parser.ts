@@ -1,8 +1,7 @@
 import { Binary, Expression, Grouping, Literal, Unary } from "./Expression";
 import { Lox } from "./Lox";
+import { ParserError } from "./ParserError";
 import { Token, TokenType } from "./Token";
-
-class ParserError extends Error {}
 
 export class Parser {
   current: number;
