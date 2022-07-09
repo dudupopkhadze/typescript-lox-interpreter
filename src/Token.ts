@@ -44,15 +44,20 @@ export enum TokenType {
   EOF,
 }
 
-export type Literal = unknown;
+export type LiteralValue = unknown;
 
 export class Token {
   type: TokenType;
   lexeme: string;
-  literal: Literal;
+  literal: LiteralValue;
   line: number;
 
-  constructor(type: TokenType, lexeme: string, literal: Literal, line: number) {
+  constructor(
+    type: TokenType,
+    lexeme: string,
+    literal: LiteralValue,
+    line: number
+  ) {
     this.type = type;
     this.lexeme = lexeme;
     this.literal = literal;
