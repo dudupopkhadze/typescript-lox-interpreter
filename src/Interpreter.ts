@@ -1,19 +1,23 @@
+import { Environment } from "./Enviroment";
 import {
+  Assign,
   Binary,
   Expression,
   ExpressionVisitor,
   Grouping,
   Literal,
   Unary,
+  Variable,
 } from "./Expression";
 import { Lox } from "./Lox";
 import { RuntimeError } from "./RuntimeError";
-import { Expr, Print, Statement, StatementVisitor } from "./Statement";
+import { Expr, Print, Statement, StatementVisitor, Var } from "./Statement";
 import { LiteralValue, Token, TokenType } from "./Token";
 
 export class Interpreter
   implements ExpressionVisitor<LiteralValue>, StatementVisitor<void>
 {
+  environment: Environment = new Environment();
   interpret(statements: Statement[]) {
     try {
       for (const statement of statements) {
@@ -23,6 +27,24 @@ export class Interpreter
       const err = error as RuntimeError;
       Lox.runtimeError(err);
     }
+  }
+
+  visitAssignExpr(expr: Assign): unknown {
+    const value = this.evaluate(expr.value);
+    this.environment.assign(expr.name, value);
+    return value;
+  }
+
+  visitVarStatement(stmt: Var): void {
+    let value = null;
+    if (stmt.initializer !== null) {
+      value = this.evaluate(stmt.initializer);
+    }
+    this.environment.define(stmt.name.lexeme, value);
+  }
+
+  visitVariableExpr(expr: Variable): unknown {
+    return this.environment.get(expr.name);
   }
 
   visitExpressionStatement(stmt: Expr): void {

@@ -10,6 +10,22 @@ export interface ExpressionVisitor<T> {
   visitGroupingExpr(expr: Grouping): T;
   visitLiteralExpr(expr: Literal): T;
   visitVariableExpr(expr: Variable): T;
+  visitAssignExpr(expr: Assign): T;
+}
+
+export class Assign extends Expression {
+  name: Token;
+  value: Expression;
+
+  constructor(name: Token, value: Expression) {
+    super();
+    this.name = name;
+    this.value = value;
+  }
+
+  accept<T>(visitor: ExpressionVisitor<T>): T {
+    return visitor.visitAssignExpr(this);
+  }
 }
 
 export class Variable extends Expression {
