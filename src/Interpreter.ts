@@ -8,17 +8,30 @@ import {
 } from "./Expression";
 import { Lox } from "./Lox";
 import { RuntimeError } from "./RuntimeError";
+import { Expr, Print, Statement, StatementVisitor } from "./Statement";
 import { LiteralValue, Token, TokenType } from "./Token";
 
-export class Interpreter implements ExpressionVisitor<LiteralValue> {
-  interpret(expression: Expression) {
+export class Interpreter
+  implements ExpressionVisitor<LiteralValue>, StatementVisitor<void>
+{
+  interpret(statements: Statement[]) {
     try {
-      const value = this.evaluate(expression);
-      console.log(this.stringify(value));
+      for (const statement of statements) {
+        this.execute(statement);
+      }
     } catch (error) {
       const err = error as RuntimeError;
       Lox.runtimeError(err);
     }
+  }
+
+  visitExpressionStatement(stmt: Expr): void {
+    this.evaluate(stmt.expression);
+  }
+
+  visitPrintStatement(stmt: Print): void {
+    const value = this.evaluate(stmt.expression);
+    console.log(this.stringify(value));
   }
 
   visitLiteralExpr(expr: Literal): unknown {
@@ -90,6 +103,10 @@ export class Interpreter implements ExpressionVisitor<LiteralValue> {
         return -Number(right);
     }
     return null;
+  }
+
+  private execute(stmt: Statement) {
+    stmt.accept(this);
   }
 
   private stringify(literal: LiteralValue) {

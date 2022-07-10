@@ -1,6 +1,14 @@
-import { Binary, Expression, Grouping, Literal, Unary } from "./Expression";
+import {
+  Binary,
+  Expression,
+  Grouping,
+  Literal,
+  Unary,
+  Variable,
+} from "./Expression";
 import { Lox } from "./Lox";
 import { ParserError } from "./ParserError";
+import { Expr, Print, Statement, Var } from "./Statement";
 import { Token, TokenType } from "./Token";
 
 export class Parser {
@@ -14,12 +22,53 @@ export class Parser {
 
   parse() {
     try {
-      return this.expression();
+      const statements: Statement[] = [];
+      while (!this.isAtEnd()) {
+        statements.push(this.declaration()!);
+      }
+      return statements;
     } catch (error) {
       const err = error as ParserError;
       console.log(err);
       return null;
     }
+  }
+
+  private declaration() {
+    try {
+      if (this.match(TokenType.VAR)) return this.varDeclaration();
+      return this.statement();
+    } catch (error) {
+      this.synchronize();
+      return null;
+    }
+  }
+
+  private varDeclaration() {
+    const name = this.consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+    let initializer = null;
+    if (this.match(TokenType.EQUAL)) initializer = this.expression();
+
+    this.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+    return new Var(name, initializer!);
+  }
+
+  private statement(): Statement {
+    if (this.match(TokenType.PRINT)) return this.printStatement();
+    return this.expressionStatement();
+  }
+
+  private printStatement() {
+    const value = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expects ';' after value.");
+    return new Print(value);
+  }
+
+  private expressionStatement() {
+    const expr = this.expression();
+    this.consume(TokenType.SEMICOLON, "Expects ';' after value.");
+    return new Expr(expr);
   }
 
   private expression(): Expression {
@@ -97,6 +146,9 @@ export class Parser {
     if (this.match(TokenType.NIL)) return new Literal(null);
     if (this.match(TokenType.NUMBER, TokenType.STRING))
       return new Literal(this.previous().literal);
+    if (this.match(TokenType.IDENTIFIER)) {
+      return new Variable(this.previous());
+    }
 
     if (this.match(TokenType.LEFT_PAREN)) {
       const expr = this.expression();
@@ -117,26 +169,26 @@ export class Parser {
     return new ParserError();
   }
 
-  //   private synchronize() {
-  //     this.advance();
-  //     while (!this.isAtEnd()) {
-  //       if (this.previous().type === TokenType.SEMICOLON) return;
+  private synchronize() {
+    this.advance();
+    while (!this.isAtEnd()) {
+      if (this.previous().type === TokenType.SEMICOLON) return;
 
-  //       switch (this.peek().type) {
-  //         case TokenType.CLASS:
-  //         case TokenType.FUN:
-  //         case TokenType.VAR:
-  //         case TokenType.FOR:
-  //         case TokenType.IF:
-  //         case TokenType.WHILE:
-  //         case TokenType.PRINT:
-  //         case TokenType.RETURN:
-  //           return;
-  //       }
+      switch (this.peek().type) {
+        case TokenType.CLASS:
+        case TokenType.FUN:
+        case TokenType.VAR:
+        case TokenType.FOR:
+        case TokenType.IF:
+        case TokenType.WHILE:
+        case TokenType.PRINT:
+        case TokenType.RETURN:
+          return;
+      }
 
-  //       this.advance();
-  //     }
-  //   }
+      this.advance();
+    }
+  }
 
   private match(...types: TokenType[]) {
     for (const type of types) {

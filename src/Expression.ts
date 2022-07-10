@@ -9,6 +9,20 @@ export interface ExpressionVisitor<T> {
   visitUnaryExpr(expr: Unary): T;
   visitGroupingExpr(expr: Grouping): T;
   visitLiteralExpr(expr: Literal): T;
+  visitVariableExpr(expr: Variable): T;
+}
+
+export class Variable extends Expression {
+  name: Token;
+
+  constructor(name: Token) {
+    super();
+    this.name = name;
+  }
+
+  accept<T>(visitor: ExpressionVisitor<T>): T {
+    return visitor.visitVariableExpr(this);
+  }
 }
 
 export class Binary extends Expression {

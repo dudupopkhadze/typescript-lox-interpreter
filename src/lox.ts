@@ -14,6 +14,7 @@ export class Lox {
   static hadError: boolean = false;
   static hadRuntimeError = false;
   start() {
+    console.log("Welcome to the Lox v1.0.0.");
     this.runPrompt();
   }
 
@@ -21,11 +22,11 @@ export class Lox {
     const scanner = new Scanner(input);
     const tokens = scanner.scanTokens();
     const parser = new Parser(tokens);
-    const expression = parser.parse()!;
+    const statements = parser.parse()!;
     if (Lox.hadError) process.exit(65);
     if (Lox.hadRuntimeError) process.exit(70);
 
-    Lox.interpreter.interpret(expression);
+    Lox.interpreter.interpret(statements);
   }
 
   private runPrompt() {
