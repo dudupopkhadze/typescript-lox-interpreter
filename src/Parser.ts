@@ -9,7 +9,7 @@ import {
 } from "./Expression";
 import { Lox } from "./Lox";
 import { ParserError } from "./ParserError";
-import { Expr, Print, Statement, Var } from "./Statement";
+import { Block, Expr, Print, Statement, Var } from "./Statement";
 import { Token, TokenType } from "./Token";
 
 export class Parser {
@@ -57,7 +57,18 @@ export class Parser {
 
   private statement(): Statement {
     if (this.match(TokenType.PRINT)) return this.printStatement();
+    if (this.match(TokenType.LEFT_BRACE)) return new Block(this.block());
     return this.expressionStatement();
+  }
+
+  private block() {
+    const statements: Statement[] = [];
+    while (!this.check(TokenType.RIGHT_BRACE) && !this.isAtEnd()) {
+      statements.push(this.declaration()!);
+    }
+
+    this.consume(TokenType.RIGHT_BRACE, "Expect '}' after block.");
+    return statements;
   }
 
   private printStatement() {

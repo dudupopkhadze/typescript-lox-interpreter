@@ -2,9 +2,11 @@ import { RuntimeError } from "./RuntimeError";
 import { LiteralValue, Token } from "./Token";
 
 export class Environment {
+  enclosing: Environment | null;
   values: Record<string, LiteralValue>;
-  constructor() {
+  constructor(enclosing?: Environment) {
     this.values = {};
+    this.enclosing = enclosing || null;
   }
 
   define(name: string, value: LiteralValue) {
@@ -13,20 +15,28 @@ export class Environment {
 
   assign(name: Token, value: LiteralValue) {
     const curValue = this.values[name.lexeme];
-    if (curValue === undefined) {
-      throw new RuntimeError(
-        name,
-        "Undefined variable '" + name.lexeme + "' ."
-      );
+    if (curValue !== undefined) {
+      this.values[name.lexeme] = value;
+      return;
     }
 
-    this.values[name.lexeme] = value;
+    if (this.enclosing) {
+      this.enclosing.assign(name, value);
+      return;
+    }
+
+    throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "' .");
   }
 
   get(name: Token) {
     const curValue = this.values[name.lexeme];
     if (curValue !== undefined) {
       return curValue;
+    }
+
+    if (this.enclosing) {
+      const value = this.enclosing.get(name) as unknown;
+      return value;
     }
 
     throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "' .");

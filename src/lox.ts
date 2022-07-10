@@ -11,6 +11,7 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+
 export class Lox {
   static interpreter = new Interpreter();
   static hadError: boolean = false;

@@ -11,7 +11,14 @@ import {
 } from "./Expression";
 import { Lox } from "./Lox";
 import { RuntimeError } from "./RuntimeError";
-import { Expr, Print, Statement, StatementVisitor, Var } from "./Statement";
+import {
+  Block,
+  Expr,
+  Print,
+  Statement,
+  StatementVisitor,
+  Var,
+} from "./Statement";
 import { LiteralValue, Token, TokenType } from "./Token";
 
 export class Interpreter
@@ -27,6 +34,10 @@ export class Interpreter
       const err = error as RuntimeError;
       Lox.runtimeError(err);
     }
+  }
+
+  visitBlockStatement(stmt: Block): void {
+    this.executeBlock(stmt.statements, new Environment(this.environment));
   }
 
   visitAssignExpr(expr: Assign): unknown {
@@ -125,6 +136,16 @@ export class Interpreter
         return -Number(right);
     }
     return null;
+  }
+
+  private executeBlock(statements: Statement[], environment: Environment) {
+    const previous = this.environment;
+    try {
+      this.environment = environment;
+      statements.forEach((statement) => this.execute(statement));
+    } finally {
+      this.environment = previous;
+    }
   }
 
   private execute(stmt: Statement) {

@@ -9,6 +9,20 @@ export interface StatementVisitor<T> {
   visitExpressionStatement(stmt: Expr): T;
   visitPrintStatement(stmt: Print): T;
   visitVarStatement(stmt: Var): T;
+  visitBlockStatement(stmt: Block): T;
+}
+
+export class Block extends Statement {
+  statements: Statement[];
+
+  constructor(statements: Statement[]) {
+    super();
+    this.statements = statements;
+  }
+
+  accept<T>(visitor: StatementVisitor<T>): T {
+    return visitor.visitBlockStatement(this);
+  }
 }
 
 export class Var extends Statement {
