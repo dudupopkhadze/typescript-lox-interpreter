@@ -1,9 +1,11 @@
 import readline from "readline";
+import fs from "fs";
 import { Interpreter } from "./Interpreter";
 import { Parser } from "./Parser";
 import { RuntimeError } from "./RuntimeError";
 import { Scanner } from "./Scanner";
 import { Token, TokenType } from "./Token";
+import path from "path";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -15,7 +17,24 @@ export class Lox {
   static hadRuntimeError = false;
   start() {
     console.log("Welcome to the Lox v1.0.0.");
-    this.runPrompt();
+    const fileName = process.argv.length >= 3 ? process.argv[2] : null;
+    if (fileName) {
+      return this.runFile(fileName);
+    } else {
+      this.runPrompt();
+    }
+  }
+
+  private runFile(fileName: string) {
+    console.log(`\nInterpreting file: ${fileName}\n`);
+    try {
+      const content = fs.readFileSync(path.join(__dirname, fileName), "utf8");
+      this.run(content);
+    } catch (error) {
+      console.log(`Unable to read file: ${fileName}`);
+    }
+
+    rl.close();
   }
 
   private run(input: string) {
