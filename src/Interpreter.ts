@@ -6,6 +6,7 @@ import {
   ExpressionVisitor,
   Grouping,
   Literal,
+  Logical,
   Unary,
   Variable,
 } from "./Expression";
@@ -14,6 +15,7 @@ import { RuntimeError } from "./RuntimeError";
 import {
   Block,
   Expr,
+  If,
   Print,
   Statement,
   StatementVisitor,
@@ -34,6 +36,24 @@ export class Interpreter
       const err = error as RuntimeError;
       Lox.runtimeError(err);
     }
+  }
+
+  visitIfStatement(stmt: If): void {
+    if (Boolean(this.evaluate(stmt.condition))) {
+      this.execute(stmt.thenBranch);
+    } else if (stmt.elseBranch !== null) {
+      this.execute(stmt.elseBranch);
+    }
+  }
+
+  visitLogicalExpr(expr: Logical): unknown {
+    const left = this.evaluate(expr.left);
+    if (expr.operator.type == TokenType.OR) {
+      if (Boolean(left)) return left;
+    } else {
+      if (!Boolean(left)) return left;
+    }
+    return this.evaluate(expr.right);
   }
 
   visitBlockStatement(stmt: Block): void {

@@ -4,6 +4,7 @@ import {
   Expression,
   Grouping,
   Literal,
+  Logical,
   Unary,
   Variable,
 } from "./Expression";
@@ -104,7 +105,7 @@ export class Parser {
   }
 
   private assignment(): Expression {
-    const expr = this.equality();
+    const expr = this.or();
 
     if (this.match(TokenType.EQUAL)) {
       const equals = this.previous();
@@ -116,6 +117,30 @@ export class Parser {
       }
 
       this.error(equals, "Invalid assignment target.");
+    }
+
+    return expr;
+  }
+
+  private or() {
+    let expr = this.and();
+
+    while (this.match(TokenType.OR)) {
+      const operator = this.previous();
+      const right = this.and();
+      return new Logical(expr, right, operator);
+    }
+
+    return expr;
+  }
+
+  private and() {
+    let expr = this.equality();
+
+    while (this.match(TokenType.AND)) {
+      const operator = this.previous();
+      const right = this.equality();
+      return new Logical(expr, right, operator);
     }
 
     return expr;

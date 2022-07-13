@@ -11,6 +11,7 @@ export interface ExpressionVisitor<T> {
   visitLiteralExpr(expr: Literal): T;
   visitVariableExpr(expr: Variable): T;
   visitAssignExpr(expr: Assign): T;
+  visitLogicalExpr(expr: Logical): T;
 }
 
 export class Assign extends Expression {
@@ -96,5 +97,22 @@ export class Literal extends Expression {
 
   accept<T>(visitor: ExpressionVisitor<T>): T {
     return visitor.visitLiteralExpr(this);
+  }
+}
+
+export class Logical extends Expression {
+  left: Expression;
+  right: Expression;
+  operator: Token;
+
+  constructor(left: Expression, right: Expression, operator: Token) {
+    super();
+    this.left = left;
+    this.right = right;
+    this.operator = operator;
+  }
+
+  accept<T>(visitor: ExpressionVisitor<T>): T {
+    return visitor.visitLogicalExpr(this);
   }
 }

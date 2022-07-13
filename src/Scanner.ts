@@ -114,12 +114,6 @@ export class Scanner {
       case `"`:
         this.string();
         break;
-      case "o": {
-        if (this.peek() === "r") {
-          this.addToken(TokenType.OR);
-        }
-        break;
-      }
 
       default: {
         if (this.isDigit(c)) {
