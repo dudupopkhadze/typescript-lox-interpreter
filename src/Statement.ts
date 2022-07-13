@@ -10,6 +10,7 @@ export interface StatementVisitor<T> {
   visitPrintStatement(stmt: Print): T;
   visitVarStatement(stmt: Var): T;
   visitBlockStatement(stmt: Block): T;
+  visitIfStatement(stmt: If): T;
 }
 
 export class Block extends Statement {
@@ -61,5 +62,26 @@ export class Print extends Statement {
 
   accept<T>(visitor: StatementVisitor<T>): T {
     return visitor.visitPrintStatement(this);
+  }
+}
+
+export class If extends Statement {
+  thenBranch: Statement;
+  elseBranch: Statement;
+  condition: Expression;
+
+  constructor(
+    thenBranch: Statement,
+    elseBranch: Statement,
+    condition: Expression
+  ) {
+    super();
+    this.thenBranch = thenBranch;
+    this.elseBranch = elseBranch;
+    this.condition = condition;
+  }
+
+  accept<T>(visitor: StatementVisitor<T>): T {
+    return visitor.visitIfStatement(this);
   }
 }

@@ -9,7 +9,7 @@ import {
 } from "./Expression";
 import { Lox } from "./Lox";
 import { ParserError } from "./ParserError";
-import { Block, Expr, Print, Statement, Var } from "./Statement";
+import { Block, Expr, If, Print, Statement, Var } from "./Statement";
 import { Token, TokenType } from "./Token";
 
 export class Parser {
@@ -56,9 +56,25 @@ export class Parser {
   }
 
   private statement(): Statement {
+    if (this.match(TokenType.IF)) return this.ifStatement();
     if (this.match(TokenType.PRINT)) return this.printStatement();
     if (this.match(TokenType.LEFT_BRACE)) return new Block(this.block());
     return this.expressionStatement();
+  }
+
+  private ifStatement() {
+    this.consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
+    const condition = this.expression();
+
+    this.consume(TokenType.RIGHT_PAREN, "Expect ')' after 'if' condition.");
+    const thenBranch = this.statement();
+
+    let elseBranch: Statement | null = null;
+    if (this.match(TokenType.ELSE)) {
+      elseBranch = this.statement();
+    }
+
+    return new If(thenBranch, elseBranch!, condition);
   }
 
   private block() {
