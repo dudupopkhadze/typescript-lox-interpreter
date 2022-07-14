@@ -20,6 +20,7 @@ import {
   Statement,
   StatementVisitor,
   Var,
+  While,
 } from "./Statement";
 import { LiteralValue, Token, TokenType } from "./Token";
 
@@ -35,6 +36,12 @@ export class Interpreter
     } catch (error) {
       const err = error as RuntimeError;
       Lox.runtimeError(err);
+    }
+  }
+
+  visitWhileStatement(stmt: While): void {
+    while (Boolean(this.evaluate(stmt.condition))) {
+      this.execute(stmt.body);
     }
   }
 
