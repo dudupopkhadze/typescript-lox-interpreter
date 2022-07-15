@@ -12,6 +12,7 @@ export interface ExpressionVisitor<T> {
   visitVariableExpr(expr: Variable): T;
   visitAssignExpr(expr: Assign): T;
   visitLogicalExpr(expr: Logical): T;
+  visitCallExpr(expr: Call): T;
 }
 
 export class Assign extends Expression {
@@ -56,6 +57,23 @@ export class Binary extends Expression {
 
   accept<T>(visitor: ExpressionVisitor<T>): T {
     return visitor.visitBinaryExpr(this);
+  }
+}
+
+export class Call extends Expression {
+  paren: Token;
+  callee: Expression;
+  arguments: Expression[];
+
+  constructor(paren: Token, callee: Expression, args: Expression[]) {
+    super();
+    this.paren = paren;
+    this.callee = callee;
+    this.arguments = args;
+  }
+
+  accept<T>(visitor: ExpressionVisitor<T>): T {
+    return visitor.visitCallExpr(this);
   }
 }
 

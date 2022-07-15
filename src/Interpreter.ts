@@ -2,6 +2,7 @@ import { Environment } from "./Enviroment";
 import {
   Assign,
   Binary,
+  Call,
   Expression,
   ExpressionVisitor,
   Grouping,
@@ -23,11 +24,30 @@ import {
   While,
 } from "./Statement";
 import { LiteralValue, Token, TokenType } from "./Token";
+import { Callable } from "./Callable";
 
 export class Interpreter
   implements ExpressionVisitor<LiteralValue>, StatementVisitor<void>
 {
-  environment: Environment = new Environment();
+  global: Environment;
+  environment: Environment;
+
+  constructor() {
+    this.global = new Environment();
+
+    this.global.define(
+      "clock",
+      new (class implements Callable {
+        arity(): number {
+          return 0;
+        }
+        call(): unknown {
+          return Date.now();
+        }
+      })()
+    );
+    this.environment = this.global;
+  }
   interpret(statements: Statement[]) {
     try {
       for (const statement of statements) {
@@ -37,6 +57,29 @@ export class Interpreter
       const err = error as RuntimeError;
       Lox.runtimeError(err);
     }
+  }
+
+  visitCallExpr(expr: Call): unknown {
+    const callee = this.evaluate(expr.callee);
+    const args: LiteralValue[] = [];
+
+    expr.arguments.forEach((arg) => args.push(this.evaluate(arg)));
+    const func = callee as Callable;
+    if (!func.call) {
+      throw new RuntimeError(
+        expr.paren,
+        "Can only call functions and classes."
+      );
+    }
+
+    if (args.length !== func.arity()) {
+      throw new RuntimeError(
+        expr.paren,
+        "Expected " + func.arity() + " arguments but got " + args.length + "."
+      );
+    }
+
+    return func.call(this, args);
   }
 
   visitWhileStatement(stmt: While): void {
