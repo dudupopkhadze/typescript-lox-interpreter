@@ -19,6 +19,7 @@ import {
   Function,
   If,
   Print,
+  Return as ReturnStmt,
   Statement,
   StatementVisitor,
   Var,
@@ -26,6 +27,7 @@ import {
 } from "./Statement";
 import { LiteralValue, Token, TokenType } from "./Token";
 import { Callable, CallableFunc } from "./Callable";
+import { Return } from "./Return";
 
 export class Interpreter
   implements ExpressionVisitor<LiteralValue>, StatementVisitor<void>
@@ -59,6 +61,12 @@ export class Interpreter
       const err = error as RuntimeError;
       Lox.runtimeError(err);
     }
+  }
+
+  visitReturnStatement(stmt: ReturnStmt): void {
+    let value = null;
+    if (stmt.value != null) value = this.evaluate(stmt.value);
+    throw new Return(value);
   }
 
   visitFunctionStatement(stmt: Function): void {

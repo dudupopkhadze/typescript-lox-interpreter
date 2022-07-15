@@ -2,6 +2,7 @@ import { Interpreter } from "./Interpreter";
 import { LiteralValue } from "./Token";
 import { Function } from "./Statement";
 import { Environment } from "./Enviroment";
+import { Return } from "./Return";
 
 export interface Callable {
   arity(): number;
@@ -23,7 +24,12 @@ export class CallableFunc implements Callable {
     for (let i = 0; i < this.declaration.params.length; i++) {
       environment.define(this.declaration.params[i]!.lexeme, args[i]);
     }
-    interpreter.executeBlock(this.declaration.body, environment);
+    try {
+      interpreter.executeBlock(this.declaration.body, environment);
+    } catch (error) {
+      const err = error as Return;
+      return err.value;
+    }
     return null;
   }
 }
