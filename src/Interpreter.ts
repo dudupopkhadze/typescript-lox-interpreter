@@ -16,6 +16,7 @@ import { RuntimeError } from "./RuntimeError";
 import {
   Block,
   Expr,
+  Function,
   If,
   Print,
   Statement,
@@ -24,7 +25,7 @@ import {
   While,
 } from "./Statement";
 import { LiteralValue, Token, TokenType } from "./Token";
-import { Callable } from "./Callable";
+import { Callable, CallableFunc } from "./Callable";
 
 export class Interpreter
   implements ExpressionVisitor<LiteralValue>, StatementVisitor<void>
@@ -48,6 +49,7 @@ export class Interpreter
     );
     this.environment = this.global;
   }
+
   interpret(statements: Statement[]) {
     try {
       for (const statement of statements) {
@@ -59,13 +61,19 @@ export class Interpreter
     }
   }
 
+  visitFunctionStatement(stmt: Function): void {
+    const func = new CallableFunc(stmt);
+    this.environment.define(stmt.name.lexeme, func);
+    return;
+  }
+
   visitCallExpr(expr: Call): unknown {
     const callee = this.evaluate(expr.callee);
     const args: LiteralValue[] = [];
 
     expr.arguments.forEach((arg) => args.push(this.evaluate(arg)));
     const func = callee as Callable;
-    if (!func.call) {
+    if (!(func instanceof CallableFunc)) {
       throw new RuntimeError(
         expr.paren,
         "Can only call functions and classes."
@@ -208,7 +216,7 @@ export class Interpreter
     return null;
   }
 
-  private executeBlock(statements: Statement[], environment: Environment) {
+  executeBlock(statements: Statement[], environment: Environment) {
     const previous = this.environment;
     try {
       this.environment = environment;

@@ -12,6 +12,7 @@ export interface StatementVisitor<T> {
   visitBlockStatement(stmt: Block): T;
   visitIfStatement(stmt: If): T;
   visitWhileStatement(stmt: While): T;
+  visitFunctionStatement(stmt: Function): T;
 }
 
 export class Block extends Statement {
@@ -39,6 +40,23 @@ export class Var extends Statement {
 
   accept<T>(visitor: StatementVisitor<T>): T {
     return visitor.visitVarStatement(this);
+  }
+}
+
+export class Function extends Statement {
+  name: Token;
+  params: Token[];
+  body: Statement[];
+
+  constructor(name: Token, params: Token[], body: Statement[]) {
+    super();
+    this.name = name;
+    this.params = params;
+    this.body = body;
+  }
+
+  accept<T>(visitor: StatementVisitor<T>): T {
+    return visitor.visitFunctionStatement(this);
   }
 }
 
