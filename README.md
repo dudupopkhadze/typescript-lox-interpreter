@@ -1,6 +1,8 @@
 # TSLox -> TypeScript Lox Interepreter
 
- Lox is a simple dynamically typed programming language with a satatic scope, and tlox is a simple typescript interpreter built from scratch.
+ Lox is a simple dynamically typed programming language with a static scope, built-in clock and many more good features. 
+ 
+ TSLox is a simple typescript interpreter built from scratch.
 
 # Running Lox
 
