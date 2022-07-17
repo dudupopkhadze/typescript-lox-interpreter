@@ -65,6 +65,6 @@ export class Token {
   }
 
   public toString() {
-    return `${this.type}  ${this.lexeme} ${this.literal};`;
+    return `${this.type}  ${this.lexeme} ${this.literal} + ${this.line};`;
   }
 }

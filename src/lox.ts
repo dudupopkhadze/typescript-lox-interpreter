@@ -6,6 +6,7 @@ import { RuntimeError } from "./RuntimeError";
 import { Scanner } from "./Scanner";
 import { Token, TokenType } from "./Token";
 import path from "path";
+import { Resolver } from "./Resolver";
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -45,6 +46,11 @@ export class Lox {
     const statements = parser.parse()!;
     if (Lox.hadError) process.exit(65);
     if (Lox.hadRuntimeError) process.exit(70);
+
+    const resolver = new Resolver(Lox.interpreter);
+    resolver.resolve(statements);
+
+    if (Lox.hadError) process.exit(65);
 
     Lox.interpreter.interpret(statements);
   }

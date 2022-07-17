@@ -1,4 +1,4 @@
-import { Environment } from "./Enviroment";
+import { Environment } from "./Environment";
 import {
   Assign,
   Binary,
@@ -34,9 +34,10 @@ export class Interpreter
 {
   global: Environment;
   environment: Environment;
-
+  locals: Record<string, { expr: Expression; depth: number }>;
   constructor() {
     this.global = new Environment();
+    this.locals = {};
 
     this.global.define(
       "clock",
@@ -50,6 +51,10 @@ export class Interpreter
       })()
     );
     this.environment = this.global;
+  }
+
+  resolve(id: string, expr: Expression, depth: number) {
+    this.locals[id] = { expr, depth };
   }
 
   interpret(statements: Statement[]) {
@@ -81,7 +86,7 @@ export class Interpreter
 
     expr.arguments.forEach((arg) => args.push(this.evaluate(arg)));
     const func = callee as Callable;
-    if (!(func instanceof CallableFunc)) {
+    if (!func.arity || !func.call) {
       throw new RuntimeError(
         expr.paren,
         "Can only call functions and classes."
@@ -128,7 +133,15 @@ export class Interpreter
 
   visitAssignExpr(expr: Assign): unknown {
     const value = this.evaluate(expr.value);
-    this.environment.assign(expr.name, value);
+
+    const record = this.locals[expr.name.toString()];
+
+    if (record !== undefined) {
+      this.environment.assignAt(record.depth, expr.name, value);
+    } else {
+      this.global.assign(expr.name, value);
+    }
+
     return value;
   }
 
@@ -141,7 +154,16 @@ export class Interpreter
   }
 
   visitVariableExpr(expr: Variable): unknown {
-    return this.environment.get(expr.name);
+    return this.lookupVariable(expr.name);
+  }
+
+  private lookupVariable(name: Token) {
+    const record = this.locals[name.toString()];
+    if (record !== undefined) {
+      return this.environment.getAt(record.depth, name.lexeme);
+    } else {
+      return this.global.get(name);
+    }
   }
 
   visitExpressionStatement(stmt: Expr): void {

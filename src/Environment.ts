@@ -41,4 +41,22 @@ export class Environment {
 
     throw new RuntimeError(name, "Undefined variable '" + name.lexeme + "' .");
   }
+
+  ancestor(depth: number) {
+    let env: Environment | null | undefined = this;
+
+    for (let i = 0; i < depth; i++) {
+      env = env?.enclosing;
+    }
+
+    return env;
+  }
+
+  getAt(depth: number, name: string) {
+    return this.ancestor(depth)!.values[name];
+  }
+
+  assignAt(depth: number, name: Token, value: LiteralValue) {
+    this.ancestor(depth)!.values[name.lexeme] = value;
+  }
 }

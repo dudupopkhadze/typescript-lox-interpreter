@@ -1,8 +1,13 @@
 import { Interpreter } from "./Interpreter";
 import { LiteralValue } from "./Token";
 import { Function } from "./Statement";
-import { Environment } from "./Enviroment";
+import { Environment } from "./Environment";
 import { Return } from "./Return";
+
+export enum FunctionType {
+  NONE,
+  FUNCTION,
+}
 
 export interface Callable {
   arity(): number;
