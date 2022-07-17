@@ -70,7 +70,7 @@ export class Interpreter
   }
 
   visitFunctionStatement(stmt: Function): void {
-    const func = new CallableFunc(stmt);
+    const func = new CallableFunc(stmt, this.environment);
     this.environment.define(stmt.name.lexeme, func);
     return;
   }

@@ -10,9 +10,11 @@ export interface Callable {
 }
 
 export class CallableFunc implements Callable {
+  closure: Environment;
   declaration: Function;
 
-  constructor(dec: Function) {
+  constructor(dec: Function, closure: Environment) {
+    this.closure = closure;
     this.declaration = dec;
   }
   arity(): number {
@@ -20,7 +22,7 @@ export class CallableFunc implements Callable {
   }
 
   call(interpreter: Interpreter, args: unknown[]): unknown {
-    const environment = new Environment(interpreter.global);
+    const environment = new Environment(this.closure);
     for (let i = 0; i < this.declaration.params.length; i++) {
       environment.define(this.declaration.params[i]!.lexeme, args[i]);
     }
