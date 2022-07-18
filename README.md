@@ -8,7 +8,7 @@
 
 - clone this repo
 - run `npm install`
-- run `npm run build` or `npm run build test.lox" if you want to interpret code from a file
+- run `npm run start` or `npm run start test.lox" if you want to interpret code from a file
 
 # Lox Description
 
