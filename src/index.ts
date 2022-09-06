@@ -1,3 +1,3 @@
-import { Lox } from "./Lox";
+import { Lox } from "./lox";
 
 new Lox().start();

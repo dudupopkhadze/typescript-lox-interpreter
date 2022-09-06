@@ -11,7 +11,7 @@ import {
   Unary,
   Variable,
 } from "./Expression";
-import { Lox } from "./Lox";
+import { Lox } from "./lox";
 import { RuntimeError } from "./RuntimeError";
 import {
   Block,

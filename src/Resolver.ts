@@ -11,7 +11,7 @@ import {
   Variable,
 } from "./Expression";
 import { Interpreter } from "./Interpreter";
-import { Lox } from "./Lox";
+import { Lox } from "./lox";
 import { Stack } from "./Stack";
 import {
   Block,
