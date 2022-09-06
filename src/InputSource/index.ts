@@ -3,11 +3,23 @@ import reader from "readline-sync";
 
 import { Optional } from "../util/types";
 
+export type InputSourceType = "file" | "cli";
+
 export interface InputSource {
   getInput(): Optional<string>;
 }
 
-export class FileInputSource implements InputSource {
+export class InputSourceFactory {
+  static createFileInputSource(source: string): FileInputSource {
+    return new FileInputSource(source);
+  }
+
+  static createCliInputSource(): InputSource {
+    return new CliInputSource();
+  }
+}
+
+class FileInputSource implements InputSource {
   private source: string;
 
   constructor(source: string) {
@@ -26,7 +38,7 @@ export class FileInputSource implements InputSource {
   }
 }
 
-export class CliInputSource implements InputSource {
+class CliInputSource implements InputSource {
   getInput(): Optional<string> {
     let input = reader.question("> ");
     if (input === "exit") {
