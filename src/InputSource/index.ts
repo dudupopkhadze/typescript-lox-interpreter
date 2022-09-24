@@ -1,12 +1,10 @@
 import fs from "fs";
 import reader from "readline-sync";
 
-import { Optional } from "../util/types";
-
 export type InputSourceType = "file" | "cli";
 
 export interface InputSource {
-  getInput(): Optional<string>;
+  getInput(): string | undefined;
 }
 
 export class InputSourceFactory {
@@ -26,7 +24,7 @@ class FileInputSource implements InputSource {
     this.source = source;
   }
 
-  getInput(): Optional<string> {
+  getInput() {
     console.log(`\nInterpreting file: ${this.source}\n`);
     try {
       return fs.readFileSync(this.source, "utf8");
@@ -39,7 +37,7 @@ class FileInputSource implements InputSource {
 }
 
 class CliInputSource implements InputSource {
-  getInput(): Optional<string> {
+  getInput() {
     let input = reader.question("> ");
     if (input === "exit") {
       console.log("Good bye:)");
