@@ -9,7 +9,7 @@ import {
   Unary,
   Variable,
 } from "./Expression";
-import { Lox } from "./Lox";
+import { Lox } from "./lox";
 import { ParserError } from "./ParserError";
 import {
   Block,
