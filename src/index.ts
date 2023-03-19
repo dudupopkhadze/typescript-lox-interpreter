@@ -1,4 +1,4 @@
-import { InputSource, InputSourceFactory } from "./inputSource";
+import { InputSource, InputSourceFactory } from "./InputSource";
 import { Lox } from "./core/lox";
 import { LOX_VERSION } from "./util/constants";
 
